@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy Product</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: inherit;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f9fafb;
+  padding: 2rem;
+  color: #1f2937;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #1e293b;
+}
+
+.form-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 2rem auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.product-details {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: auto;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.product-details img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+button {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.back-btn {
+  margin-bottom: 1rem;
+}
+
+    </style>
+</head>
+
+<body>
+    <a href="/customer" class="back-btn"><button>Back to Home</button></a>
+    <h1>Buy Now</h1>
+    <div class="product-details" id="product" product-id="<%= product._id %>">
+        <h2>
+            <%= product.name %>
+        </h2>
+        <img src="/uploads/<%= product.imageSrc %>" alt="<%= product.name %>" loading="lazy"/>
+        <p>
+            <%= product.description %>
+        </p>
+        <p>Price: Rs. <span id="productPrice">
+                <%= product.price %>
+            </span>/-</p>
+        <p>Quantity: <span id="productQuantity">
+                <%= product.quantity %>
+            </span>/-</p>
+        <p>Total Amount: Rs.<span id="productAmount">
+                <%= product.quantity * product.price %>
+            </span>/-</p>
+    </div>
+    <div class="form-container">
+        <h2>Checkout Details</h2>
+        <form id="buyNowForm">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="address">Address</label>
+            <textarea id="address" name="address" required></textarea>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="payment">Payment Method</label>
+            <select id="payment" name="payment" required>
+                <option value="">Select Payment Method</option>
+                <option value="credit">Credit Card</option>
+                <option value="debit">Debit Card</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+
+            <button type="submit">Place Order</button>
+        </form>
+    </div>
+</body>
+
+<script>
+    const form = document.querySelector('#buyNowForm');
+    form.addEventListener('submit', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        let checkProductID = document.querySelector('.product-details').getAttribute('product-id');
+        const count = document.querySelector('#productQuantity').innerText;
+        const totalAmount = document.querySelector('#productAmount').innerText;
+        if (!checkProductID) {
+            alert("Product Detail Error");
+            return;
+        }
+        else {
+
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            fetch('/customer/buy/<%= product._id %>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...data,
+                    products: { _id: checkProductID, count: count },
+                    customerID: '<%= userID %>',
+                    totalAmount: totalAmount
+                })
+            })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Error response:", errorText);
+                    alert("Error: " + errorText);
+                    return;
+                }
+                try {
+                    const jsonResponse = await res.json();
+                    if (jsonResponse.Result === 'Product Not Found') {
+                        alert('Product buy failed: ' + jsonResponse.Result);
+                        return;
+                    }
+                    alert(jsonResponse.Result);
+                    window.location.href = '/customer/cart/checkout/';
+                } catch (e) {
+                    console.error("Failed to parse JSON:", e);
+                    alert("Error parsing response. It seems the server did not return valid JSON.");
+                }
+            }).catch((error) => {
+                alert("Error in fetching products: " + error);
+            }).finally(() => {
+                checkProductID = [];
+                form.reset();
+            });
+        }
+    });
+</script>
+
+</html>

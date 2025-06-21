@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart Page</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: inherit;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f3f4f6;
+  padding: 2rem;
+  color: #1f2937;
+}
+
+h1 {
+  width: 100%;
+  padding: 1.5rem 0;
+  background: #3b82f6;
+  text-align: center;
+  font-size: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.form-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 2rem auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-container select,
+.form-container textarea,
+.form-container input {
+  color: #111827;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cart-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.cart-item {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+}
+
+.cart-item img {
+  width: 100px;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+}
+
+button {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0 1rem 0 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.cart-item button {
+  padding: 0.6rem 1.2rem;
+}
+
+.cart-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.summary {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+#checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3b82f6;
+  border-radius: 5px;
+  background-color: #ffffff;
+  position: relative;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#checkbox:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+#checkbox:checked::before {
+  content: '✔';
+  position: absolute;
+  top: 0;
+  left: 4px;
+  color: white;
+  font-size: 14px;
+}
+
+.quantity-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantity-box input {
+  width: 60px;
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #111827;
+}
+
+  </style>
+</head>
+
+<body>
+  <h1>Your Cart</h1>
+  <div>
+    <a href="/customer"><button>Back to Products</button></a>
+    <button id="checkoutBtn">Buy Cart</button>
+  </div>
+
+  <div class="form-container" id="checkoutForm" style="display: none; margin-top: 2rem;">
+    <h2>Checkout Details</h2>
+    <form id="checkoutDetails">
+      <label for="name">Full Name</label><br />
+      <input type="text" id="name" name="name" required
+        style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;"><br />
+      <label for="address">Address</label><br />
+      <textarea id="address" name="address" required
+        style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;"></textarea><br />
+      <label for="email">Email</label><br />
+      <input type="email" id="email" name="email" required
+        style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;"><br />
+      <label for="payment">Payment Method</label><br />
+      <select id="payment" name="payment" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+        <option value="">Select Payment Method</option>
+        <option value="credit">Credit Card</option>
+        <option value="debit">Debit Card</option>
+        <option value="cod">Cash on Delivery</option>
+      </select><br />
+      <button type="submit">Place Order</button>
+    </form>
+  </div>
+  <ul class="cart-list"></ul>
+  <p style="display: none; text-align:center;" id="empty">Your cart is empty.</p>
+  <div class="summary">
+    Total Amount: Rs. <span id="totalCheckOutAmount">0.0</span>/-
+  </div>
+</body>
+<script>
+  const checkoutForm = document.querySelector('#checkoutDetails');
+  const cartList = document.querySelector('.cart-list');
+
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchCartProducts();
+  });
+
+  document.getElementById('checkoutBtn').addEventListener('click', () => {
+    document.getElementById('checkoutForm').style.display = 'block';
+  });
+
+  checkoutForm.addEventListener('submit', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fillForm();
+  });
+
+  cartList.addEventListener('click', (event) => {
+    const cartItem = event.target.closest('.cart-item');
+    const quantity = cartItem.querySelector('.quantity-box');
+    if (event.target.tagName === 'BUTTON' && event.target.className === 'inc_button') {
+      quantity.querySelector('input').value++;
+    }
+    else if (event.target.tagName === 'BUTTON' && event.target.className === 'dec_button') {
+      if (quantity.querySelector('input').value > 0) {
+        quantity.querySelector('input').value--;
+      }
+    }
+    if (event.target.className === 'remove-item' || event.target.className === 'dec_button' || event.target.className === 'inc_button') {
+      changeQuantity(event)
+    }
+  });
+
+  function changeQuantity(event) {
+    const cartItem = event.target.closest('.cart-item');
+    const quantity = cartItem.querySelector('.quantity-box');
+    fetch('/customer/cart', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'Application/json'
+      },
+      body: JSON.stringify({
+        productID: cartItem.getAttribute('product'),
+        count: quantity.querySelector('input').value
+      })
+    })
+      .then(async (res) => {
+        res = await res.json();
+        if (!res.ok) {
+          alert(res.Result);
+          return;
+        }
+      })
+      .catch((error) => {
+        alert("Error while requesting with server", error)
+      })
+      .finally(() => {
+        cartItem.querySelector('.product_totalAmount').innerText = parseInt(quantity.querySelector('input').value) * parseInt(cartItem.querySelector('.product_Price').innerText);
+        calculateAmount();
+      })
+  }
+
+  function calculateAmount() {
+    let amount = 0;
+    document.querySelectorAll('.cart-item').forEach(item => {
+      amount += parseInt(item.querySelector('.product_totalAmount').innerText);
+    })
+    document.querySelector('#totalCheckOutAmount').innerText = amount.toFixed(2);
+  }
+
+  function fillForm() {
+    const formData = new FormData(checkoutForm);
+    const cart_item = document.querySelectorAll('.cart-item');
+    let checkProductID = [];
+    cart_item.forEach(item => {
+      if (item.querySelector('input[type="checkbox"]').checked) {
+        checkProductID.push(item.getAttribute('product'));
+      }
+    });
+
+    if (!checkProductID.length) {
+      alert("Select the product please...");
+      return;
+    }
+    else {
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      fetch('/customer/cart/checkout/', {   // here 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...data, checkoutProducts: checkProductID })
+      }).then(async (res) => {
+        res = await res.json();
+        if (!res.ok || res.Result === 'Product Not Found') {
+          alert(res.Result);
+          return;
+        }
+        else {
+          alert(res);
+          window.location.href = '/customer/cart/checkout/'; // here
+        }
+      }).catch((error) => {
+        alert(error);
+      }).finally(() => {
+        cart_item.forEach(item => {
+          item.querySelector('input[type="checkbox"]').checked = false;
+        });
+        checkProductID = [];
+        checkoutForm.reset();
+      })
+    }
+  }
+
+  function fetchCartProducts() {
+    const allCarts = JSON.parse(localStorage.getItem('Product')) || [];
+    let cartIds = [], cartCounts = [], map = new Map();
+    if (allCarts.length > 0) {
+      allCarts.forEach(item => {
+        map.set(item.product_id, item.count);
+      });
+      map.forEach((value, key) => {
+        cartIds.push(key);
+        cartCounts.push(value);
+      })
+    }
+    fetch('/customer/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        cartIds: cartIds,
+        cartCounts: cartCounts
+      })
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          alert("Server Error");
+          return;
+        }
+        res = await res.json();
+        if (res.clearLocal === 'YES') {
+          localStorage.removeItem('Product');
+        }
+
+        showProduct(res.cartItems);
+      })
+      .catch((error) => {
+        console.log("Error while fetching products", error);
+      })
+      .finally(() => {
+        cartCounts = [], cartIds = [], map.clear();
+      })
+  }
+  function showProduct(products) {
+    if (products.length < 0) {
+      document.querySelector('#empty').style.display = 'block';
+      return;
+    }
+    let sum = 0;
+    products.forEach((item) => {
+      item.totalAmount = item.count * item.price;
+      sum += item.totalAmount;
+      addProduct(item);
+    });
+    // console.log(products);
+    document.querySelector('#totalCheckOutAmount').innerText = sum.toFixed(2);
+  }
+
+  function addProduct(item) {
+    const li = document.createElement('li');
+    li.className = 'cart-item';
+    li.setAttribute('product', item._id);
+
+    const input = document.createElement('input');
+    input.setAttribute('type', 'checkbox');
+    input.setAttribute('id', "checkbox");
+
+    const strong = document.createElement('strong');
+    strong.innerText = item.name;
+
+    const img = document.createElement('img');
+    img.setAttribute('src', `/uploads/${item.imageSrc}`);
+    img.setAttribute('alt', `${item.name}`);
+    img.setAttribute('loading','lazy');
+
+    const p1 = document.createElement('p');
+    p1.innerText = item.description;
+
+    const p2 = document.createElement('p');
+    p2.innerHTML = `Price: Rs. `;
+    const span1 = document.createElement('span');
+    span1.className = 'product_Price';
+    span1.innerText = item.price;
+    p2.append(span1);
+    p2.append('/-');
+
+    const p3 = document.createElement('p');
+    p3.innerText = 'Quantity: ';
+
+    const quantitybox = document.createElement('div');
+    quantitybox.className = 'quantity-box';
+
+    const quantitybutton1 = document.createElement('button');
+    quantitybutton1.innerText = '✚';
+    quantitybutton1.className = 'inc_button';
+
+    const quantityinput = document.createElement('input');
+    quantityinput.setAttribute('type', 'number');
+    quantityinput.setAttribute('value', item.count);
+    quantityinput.setAttribute('min', '1');
+    quantityinput.setAttribute('readonly', '');
+    quantityinput.setAttribute('name', 'quantity');
+
+    const quantitybutton2 = document.createElement('button');
+    quantitybutton2.innerText = '━';
+    quantitybutton2.className = 'dec_button';
+
+    quantitybox.append(quantitybutton2);
+    quantitybox.append(quantityinput);
+    quantitybox.append(quantitybutton1);
+    p3.append(quantitybox);
+
+    const p4 = document.createElement('p');
+    p4.innerText = 'Total: Rs. ';
+
+    const span2 = document.createElement('span');
+    span2.className = 'product_totalAmount';
+    span2.innerText = (item.count * item.price).toFixed(2);
+    p4.append(span2);
+    p4.append('/-');
+
+    const div = document.createElement('div');
+    div.className = 'cart-actions';
+
+    const button = document.createElement('button');
+    button.className = 'remove-item';
+    button.innerText = 'Remove';
+
+    div.append(button);
+
+    li.append(input);
+    li.append(strong);
+    li.append(img);
+    li.append(p1);
+    li.append(p2);
+    li.append(p3);
+    li.append(p4);
+    li.append(div);
+    cartList.append(li);
+  }
+</script>
+
+</html>

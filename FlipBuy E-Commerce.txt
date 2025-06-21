@@ -1,0 +1,16 @@
+1.)Every database have same unique field 👍
+	Example databases->
+		i.)customer/seller
+		ii.)all product
+		iii.)checkout products
+2.)Only seller edit,delete the product 👍
+3.)customer can add to cart and checkout the product 👍
+4.)Login appropriately for seller and customer 👍
+5.)Every product have name,image,description 👍
+6.)count buttons 👍
+7.)checkout page 👍
+8.)paging 👍
+9.)page for every product 👍
+10.)customer can see all products without Login 👍
+11.)customer can cart items without Login 👍
+12.)integration of payment gateway

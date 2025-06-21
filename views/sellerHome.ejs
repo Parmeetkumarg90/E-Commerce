@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Seller-Home</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      color: inherit;
+      scrollbar-width: none;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      padding: 1.5rem;
+      color: #1f2937;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 90%;
+      width: 72%;
+      margin: 2rem auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    h1 {
+      width: 100%;
+      padding: 1.5rem 0;
+      background: #3b82f6;
+      text-align: center;
+      font-size: 1.5rem;
+      border-radius: 1vmax;
+      color: #ffffff;
+    }
+
+    label {
+      display: block;
+      margin: 1rem 0 0.5rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      color: #111827;
+      background-color: #ffffff;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    select {
+      background-color: #ffffff;
+    }
+
+    select[multiple] {
+      height: auto;
+      background-image: none;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background: #3b82f6;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .product-list {
+      list-style: none;
+      margin: 2rem 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .product-item {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 6px;
+      flex: 1 1 200px;
+      max-width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-item img {
+      width: 100%;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    .product-item-description {
+      height: 100px;
+      margin: 1vmax 0;
+      overflow-y: hidden;
+      color: #4b5563;
+    }
+
+    .product-actions {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    div button {
+      padding: 0.75rem 1.25rem;
+    }
+
+    /* ===== Responsive Media Queries ===== */
+
+    @media screen and (max-width: 768px) {
+      .form-container {
+        padding: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      .product-item {
+        flex: 1 1 45%;
+        max-width: 100%;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 1rem;
+      }
+
+      .form-container {
+        padding: 1rem;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      input,
+      textarea {
+        font-size: 0.95rem;
+      }
+
+      button {
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+      }
+
+      .product-item {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+    }
+    .complain-section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  margin-top: 30px;
+  border-radius: 8px;
+}
+
+.complain-section h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.complain-list {
+  list-style: none;
+  padding: 0;
+}
+
+.complain-item {
+  background-color: #fff;
+  border-left: 5px solid #ff6b6b;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.complain-item p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.no-complains {
+  color: #888;
+  font-style: italic;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <h1 id="top">Fill Product Details</h1>
+  <div class="form-container">
+    <button class="btn">Log Out</button>
+    <a href="/customer"><button class="btn">All Products</button></a>
+    <form method="post" action="/seller" enctype="multipart/form-data">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="desc">Description</label>
+      <textarea id="desc" name="description" rows="4" required></textarea>
+      <label style="text-align: center; color: rgb(245, 231, 44);">File Size Should be smaller than 200kb</label>
+      <label for="file">Upload One Main Image</label>
+      <input type="file" id="file" name="image" accept="image/*" required>
+
+      <label for="file">Upload Extra Image (Maximum 5)</label>
+      <input type="file" id="eimage" name="eimage" accept="image/*" multiple="true" required>
+
+      <label for="category">Category</label>
+      <select name="category" id="category">
+        <option value="">Select Any One Category</option>
+        <option value="clothes">Clothes</option>
+        <option value="electronics">Electronics</option>
+        <option value="toys">Children</option>
+        <option value="beauty">Beauty</option>
+        <option value="furniture">Furniture</option>
+      </select>
+
+      <label for="stock">Total Stock of Product</label>
+      <input type="number" id="stock" name="stock" required>
+
+      <label for="maxbuy">Maximum Product Buy at a time</label>
+      <input type="number" id="maxbuy" name="maxbuy" required>
+
+      <label for="price">Price</label>
+      <input type="number" id="price" name="price" required>
+
+      <button id="submitBtn" type="submit">Submit</button>
+    </form>
+  </div>
+  <% if (errorCreated) { %>
+    <p id="error-message">
+      <%= errorCreated %>
+    </p>
+    <% } %>
+      <% if (productFile.length> 0) { %>
+        <ul class="product-list">
+          <% for (let product of productFile) { %>
+            <li class="product-item" user="<%= product._id %>">
+              <strong>
+                <%= product.name %>
+              </strong>
+              <img src="/uploads/<%= product.imageSrc %>" alt="<%= product.name %>" loading='lazy'>
+              <p class="product-item-description">
+                <%= product.description %>
+              </p>
+              <p>
+                Rs. <%= product.price %>/-
+              </p>
+              <div class="product-actions">
+                <a href="#top"><button class="edit-btn">Edit</button></a>
+                <button class="delete-btn">Delete</button>
+              </div>
+            </li>
+            <% } %>
+          </ul>
+          <% } %>
+          <div class="complain-section">
+  <h2>Customer Complaints</h2>
+  <% if (complains.length) { %>
+    <ul id="complain-list">
+      <% for(let complain of complains) { %>
+        <li class="complain-item">
+          <p><strong>User:</strong> <%= complain.userEmail %></p>
+          <p><strong>Product:</strong> <%= complain.productName %></p>
+          <p><strong>Date:</strong> <%= complain.date %></p>
+          <p class="productID" style="visibility:hidden;"><%= complain.productID %></p>
+          <p class="userID" style="visibility:hidden;"><%= complain.userID %></p>
+          <p class="sellerID" style="visibility:hidden;"><%= complain.sellerID %></p>
+          <button class="solve">Solve</button>
+        </li>
+      <% } %>
+    </ul>
+  <% } else { %>
+    <p class="no-complains">No complaints found.</p>
+  <% } %>
+</div>
+
+</body>
+<script>
+  const complainList = document.querySelector('#complain-list');
+  complainList.addEventListener('click',(event)=>{
+    event.stopPropagation();
+    event.preventDefault();
+    const productID = event.target.parentNode.querySelector('.productID').innerHTML;
+    const userID = event.target.parentNode.querySelector('.userID').innerHTML;
+    const sellerID = event.target.parentNode.querySelector('.sellerID').innerHTML;
+    // console.log(productID,userID,sellerID);
+    window.location.href = '/help/'+productID+`?userID=${userID}&sellerID=${sellerID}&role=${'seller'}`;
+  });
+
+  const form = document.querySelector('form');
+  const allFields = form.querySelectorAll('input,textarea');
+  let _id;
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector('#submitBtn').disabled = true;
+    if (form.hasAttribute('method')) {
+      document.querySelector('#submitBtn').disabled = false;
+      form.submit();
+      return;
+    }
+    const formData = new FormData(form);
+    formData.append('_id', _id);
+    fetch('/seller', {
+      method: 'PATCH',
+      body: formData
+    }).then(() => {
+      alert("Updates changed successfully");
+    }).catch((error) => {
+      console.log(error);
+      alert("Failed while updating...");
+    }).finally(() => {
+      document.querySelector('#submitBtn').disabled = false;
+      form.reset();
+      _id = null;
+    })
+    addRequired();
+  });
+
+  document.querySelector('ul').addEventListener('click', (event) => {
+    event.stopPropagation();
+    const btnClass = event.target.className;
+    _id = event.target.closest('.product-item').getAttribute('user');
+    // console.log(_id);
+    if (btnClass === 'delete-btn') {
+      deleteImg(event);
+    }
+    else if (btnClass === 'edit-btn') {
+      removeRequired();
+      editData(event);
+    }
+  });
+
+  function editData(event) {
+    document.querySelector('#name').value = event.target.closest('.product-item').querySelector('strong').innerText;
+    document.querySelector('#desc').value = event.target.closest('.product-item').querySelector('p').innerText;
+    document.querySelector('#file').value = '';
+  }
+  function deleteImg(event) {
+    // console.log(image)
+    fetch('/seller', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        _id: _id,
+      })
+    })
+      .then(() => {
+        event.target.closest('.product-item').remove();
+        alert("Delete image successfully");
+      })
+      .catch(() => {
+        alert("Error while deleting", image);
+      }).finally(() => {
+        _id = null;
+      })
+  }
+
+  function addRequired() {
+    form.setAttribute('action', '/seller');
+    form.setAttribute('method', 'post');
+    allFields.forEach(field => {
+      field.setAttribute('required', '');
+    });
+  }
+  function removeRequired() {
+    form.removeAttribute('action');
+    form.removeAttribute('method');
+    allFields.forEach(field => {
+      field.removeAttribute('required');
+    });
+  }
+
+  document.querySelectorAll('.btn')[0].addEventListener('click', (e) => { // logout button
+    e.preventDefault();
+    logOut('/customer');
+  });
+
+  function logOut(url) {
+    fetch(url, { method: 'delete', })
+      .then(() => {
+        alert("Logout Successful");
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert("Error while logout...");
+      })
+  }
+</script>
+
+</html>

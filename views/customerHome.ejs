@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlipBuy-Home</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* {
+  transition: 0.3s all;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+}
+
+body {
+  background: #f3f4f6; /* Light cool gray */
+  color: #1f2937; /* Dark gray text */
+  padding: 1rem;
+}
+
+.form-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 90%;
+  width: 100%;
+  margin: 2rem auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  color: #111827; /* dark neutral */
+}
+
+h1 {
+  width: 100%;
+  padding: 1.5rem 0;
+  background: #3B82F6; /* Blue primary */
+  color: #ffffff;
+  font-size: 1.5rem;
+  border-radius: 12px;
+}
+
+h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #1f2937;
+}
+
+label {
+  display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+input[type="file"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #111827;
+  background-color: #ffffff;
+  font-size: 1rem;
+}
+
+#header-btn {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button {
+  font-weight: 600;
+  padding: 1rem 2rem;
+  background: #3B82F6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  border: 2px solid transparent;
+}
+
+button:hover {
+  background: #2563eb;
+  border-color: #93c5fd;
+}
+
+.product-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.product-item {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  flex: 1 1 300px;
+  color: #1f2937;
+}
+
+.product-item img {
+  width: 100%;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+div button {
+  padding: 1rem 1.2rem;
+  margin: 1rem 0.2rem;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quantity-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0.2rem;
+}
+
+.quantity-box input {
+  padding: 0.75rem 1.5rem;
+  margin: 0 1rem;
+  font-size: 1rem;
+}
+
+/* Responsive breakpoints */
+@media screen and (max-width: 768px) {
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  #header-btn {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .product-item {
+    width: 100%;
+    max-width: 90%;
+  }
+
+  .quantity-box input {
+    width: 100%;
+    margin: 0.5rem 0.2rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .form-container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  div button {
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0.2rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  input[type="file"] {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <h1>FlipBuy</h1>
+  <div id="header-btn">
+    <a href="/customer/cart"><button class="btn">Cart</button></a>
+    <a href=""><button class="btn">Old Checkout Products</button></a>
+    <button class="btn">Log Out</button>
+  </div>
+  <div>
+    <a href="/auth/login"><button>Login</button></a>
+    <a href="/auth/signup"><button>Signup</button></a>
+    <a href="/seller"><button>Seller</button></a>
+  </div>
+  <ul class="product-list"></ul>
+</body>
+
+<script>
+  let checkout_url = '/customer/cart/checkout/';
+  const product_list = document.querySelector('.product-list');
+  document.querySelectorAll('.btn')[2].addEventListener('click', (e) => { // logout button
+    e.preventDefault();
+    logOut('/customer');
+  });
+
+  function logOut(url) {
+    fetch(url, { method: 'delete', })
+      .then(() => {
+        alert("Logout Successful");
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert("Error while logout...");
+      })
+  }
+
+  product_list.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const quantity = e.target.closest('.product-item').querySelector('.quantity-box');
+
+    if (e.target.tagName === 'BUTTON' && e.target.className === 'inc_button') {
+      quantity.querySelector('input').value++;
+    }
+    else if (e.target.tagName === 'BUTTON' && e.target.className === 'dec_button') {
+      if (quantity.querySelector('input').value > 1) {
+        quantity.querySelector('input').value--;
+      }
+    }
+    else if (e.target.tagName === 'BUTTON' && e.target.className === 'cart') {
+      addCart(e.target.closest('.product-item'), '/customer');
+    }
+    else if (e.target.tagName === 'BUTTON' && e.target.className === 'buy') {
+      buyProduct(e.target.closest('.product-item'), '/customer/buy/');
+    }
+    else if (e.target.tagName === 'IMG') {
+      showProduct(e.target.closest('.product-item'), '/customer/product/')
+    }
+  });
+
+  function showProduct(currNode, url) {
+    url = url + currNode.getAttribute('product_id');
+    fetch(url, {
+      method: 'GET',
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          alert("Product Details not Found");
+          return;
+        }
+        else {
+          window.location.href = url;
+        }
+      })
+      .catch((error) => {
+        alert("Error occured while displaying product", error);
+      })
+  }
+
+  function buyProduct(currNode, url) {
+    const _id = currNode.getAttribute('product_id');
+    const count = Number(currNode.querySelector('.quantity-box').querySelector('input').value);
+    window.location.href = url + `${_id}?count=${count}`;
+  }
+
+  function addCart(currNode, url) {
+    const _id = currNode.getAttribute('product_id');
+    const count = Number(currNode.querySelector('.quantity-box').querySelector('input').value);
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        product_id: _id,
+        count: count,
+      })
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          alert("Failed to add in cart");
+          return;
+        }
+        res = await res.json();
+        if (res.Result === "User Doesn't Exist") {
+          let product = JSON.parse(localStorage.getItem('Product'));
+          if (!product) {
+            product = [];
+          }
+          product.push({
+            product_id: _id,
+            count: count,
+          });
+          localStorage.setItem('Product', JSON.stringify(product));
+        }
+      })
+      .catch((err) => {
+        alert("Add to cart failed due to server error");
+      })
+      .finally(() => {
+        currNode.querySelector('.quantity-box').querySelector('input').value = 1;
+      })
+  }
+
+  let p1 = 0, datasize = 4, isFetching = false, flag = 1;
+  window.addEventListener('scroll', scrollHandler);
+  window.addEventListener('DOMContentLoaded', () => fetchProducts(p1, p1 + datasize));
+  function fetchProducts(start, end) {
+    if (isFetching) return;
+    isFetching = true;
+    fetch('/api/customers/products', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        start: start,
+        end: end
+      }),
+    })
+      .then(async (res) => {
+        let data = await res.json();
+        data = data.Result;
+        if (data === 'No more products') {
+          flag = 0;
+          return;
+        }
+
+        document.querySelectorAll('a')[1].href = checkout_url;
+        // console.log(data);
+        data.forEach(obj => {
+          createItem(obj);
+        });
+        p1 += datasize;
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      })
+      .finally(() => {
+        isFetching = false;
+      })
+  }
+  function scrollHandler() {
+    const scrollTop = window.scrollY; // scroll height
+    const windowHeight = window.innerHeight; // viewport height
+    const documentHeight = document.body.offsetHeight; // entire page height
+    if (scrollTop + windowHeight >= documentHeight - 100 && flag === 1 && !isFetching) {
+      fetchProducts(p1, p1 + datasize);
+    }
+  }
+
+  function createItem(obj) {
+    const item = document.createElement('li');
+    item.className = 'product-item';
+    item.setAttribute('product_id', obj._id);
+
+    const strong = document.createElement('strong');
+    strong.innerText = obj.name;
+    strong.setAttribute('style', 'margin: 2vmax; 0');
+
+    const img = document.createElement('img');
+    img.src = '/uploads/' + obj.imageSrc;
+    img.alt = obj.name;
+    img.setAttribute('loading','lazy');
+
+    // const desc_p = document.createElement('p');
+    // desc_p.style.height = '100px';
+    // desc_p.style.overflowY = 'hidden';
+    // desc_p.innerText = obj.description;
+
+    const price_p = document.createElement('p');
+    price_p.innerText = `Rs. ${obj.price} /-`;
+    price_p.style.margin = '1vmax 0 0 0 ';
+
+    const maxbuy = document.createElement('p');
+    maxbuy.innerText = `Buy Limit: ${obj.maxbuy}`;
+    maxbuy.style.margin = '1vmax 0 0 0 ';
+
+    const quantity_div = document.createElement('div');
+    quantity_div.className = 'quantity-box';
+
+    const inc_button = document.createElement('button');
+    inc_button.setAttribute('class', 'inc_button');
+    inc_button.innerText = '✚';
+
+    const dec_button = document.createElement('button');
+    dec_button.setAttribute('class', 'dec_button');
+    dec_button.innerText = '━';
+
+    const input = document.createElement('input');
+    input.setAttribute('type', 'number');
+    input.setAttribute('value', obj.count || 1);
+    input.setAttribute('min', 1);
+
+    quantity_div.append(dec_button);
+    quantity_div.append(input);
+    quantity_div.append(inc_button);
+
+    const action_button = document.createElement('div');
+
+    const cartButton = document.createElement('button');
+    cartButton.className = 'cart';
+    cartButton.innerText = 'Add to Cart';
+
+    const buyButton = document.createElement('button');
+    buyButton.className = 'buy';
+    buyButton.innerText = 'Buy';
+
+    action_button.append(cartButton);
+    action_button.append(buyButton);
+
+    item.append(strong);
+    item.append(img);
+    // item.append(desc_p);
+    item.append(price_p);
+    item.append(maxbuy);
+    item.append(quantity_div);
+    item.append(action_button);
+    product_list.append(item);
+  }
+</script>
+
+</html>

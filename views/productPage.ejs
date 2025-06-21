@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= product.name %>
+  </title>
+  <style>
+ @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 3vmin;
+  scrollbar-width: none;
+  transition: 0.5s all;
+  color: inherit;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f9fafb;
+  padding: 1vmax;
+  margin: 0;
+  color: #1f2937;
+}
+
+h1 {
+  width: 100%;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  background: #3b82f6;
+  text-align: center;
+  font-size: 1.5rem;
+  border-radius: 1vmax;
+  color: #fff;
+}
+
+.form-container {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 2rem auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+}
+
+button {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 1.5vmax 2.5vmax;
+  border-radius: 1vmax;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.product-display {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.product-image {
+  flex: 1;
+}
+
+.product-image img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+}
+
+.product-details {
+  flex: 2;
+}
+
+.product-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-price {
+  font-size: 3vmin;
+  margin-bottom: 1rem;
+  color: #0ea5e9;
+  font-weight: 500;
+}
+
+.product-description {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  height: 250px;
+  overflow-y: auto;
+  border-radius: 1vmax;
+  padding: 5%;
+  border: 2px solid #e5e7eb;
+  background: #f1f5f9;
+  color: #374151;
+}
+
+.product-category {
+  margin: 1vmax 0;
+  color: #475569;
+}
+
+.side-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1vmax 0;
+  justify-content: center;
+}
+
+.side-images img {
+  width: 15%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: transform 0.3s ease;
+  aspect-ratio: 1 / 1;
+}
+
+.side-images img:hover {
+  transform: scale(1.05);
+  border-color: #3b82f6;
+}
+
+@media screen and (max-width: 400px) {
+  .product-display {
+    flex-direction: column;
+  }
+
+  .product-image img {
+    width: 70%;
+  }
+
+  .side-images img {
+    width: 50%;
+  }
+}
+
+.other-products {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  justify-content: space-between;
+  margin: 2vmax 0;
+}
+
+.other-products > .form-container {
+  min-width: 35vmax;
+  margin: 0 1vmax;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <h1>Product Details</h1>
+  <a href="/customer"><button>Back To Home</button></a>  
+    <a href="/help/<%= product._id %>?userID=<%= userID %>&sellerID=<%= product.sellerID %>&role=customer"><button>Help</button></a>
+  <div class="form-container">
+    <div class="product-display">
+      <div class="product-image">
+        <img src="/uploads/<%= product.imageSrc  %>" alt="Product Image" loading="lazy" />
+      </div>
+      <div class="product-details">
+        <div class="product-title">
+          <%= product.name %>
+        </div>
+        <div class="product-category">
+          Product Category: <%= product.category %>
+        </div>
+        <p class="product-price">
+          Rs. <%= product.price %>(Price)+<%= product.shipping %>(Shipping Charges)/-
+        </p>
+        <div class="product-maxbuy">
+          Buy Limit : <%= product.maxbuy %>
+        </div>
+        <div class="product-description">
+          <%= product.description %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="side-images">
+    <% for(let image of product.sideImages){ %>
+      <img src="/uploads/<%= image %>" alt="<%= image %>" loading="lazy" />
+      <% } %>
+  </div>
+
+  <h1>Other Similar Category Products</h1>
+  <div class="other-products">
+    <% for(let each of categoryProducts){ %>
+      <div class="form-container">
+        <div class="product-display">
+          <div class="product-image">
+            <a href="/customer/product/<%= each._id %>">
+            <img src="/uploads/<%= each.imageSrc  %>" alt="each.imageSrc" loading="lazy" />
+            </a>
+          </div>
+          <div class="product-details">
+            <div class="product-title">
+              <%= each.name %>
+            </div>
+            <div class="product-category">
+              Product Category: <%= each.category %>
+            </div>
+            <div class="product-maxbuy">
+              Buy Limit: <%= each.maxbuy %>
+            </div>
+            <div class="product-price">
+              Product Price: <%= each.price %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+  </div>
+  
+  <h1>Frequently Brought Together</h1>
+  <div class="other-products">
+    <% for(let each of frequentlyBuy){ %>
+      <div class="form-container">
+        <div class="product-display">
+          <div class="product-image">
+            <a href="/customer/product/<%= each._id %>">
+            <img src="/uploads/<%= each.imageSrc  %>" alt="each.imageSrc" loading="lazy" />
+            </a>
+          </div>
+          <div class="product-details">
+            <div class="product-title">
+              <%= each.name %>
+            </div>
+            <div class="product-category">
+              Product Category: <%= each.category %>
+            </div>
+            <div class="product-maxbuy">
+              Buy Limit: <%= each.maxbuy %>
+            </div>
+            <div class="product-price">
+              Product Price: <%= each.price %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+  </div>
+
+</body>
+
+</html>

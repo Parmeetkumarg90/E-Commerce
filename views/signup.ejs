@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signup Page</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+  transition: 0.3s all;
+  text-align: center;
+}
+
+body {
+  min-height: 100vh;
+  background: #f3f4f6; /* Light gray background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.signup-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 350px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.signup-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.signup-container h2 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.signup-container input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #111827;
+}
+
+.signup-container input:focus {
+  border-color: #3B82F6;
+  outline: none;
+}
+
+.signup-container button {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background: #3B82F6;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.signup-container button:hover {
+  background: #2563eb;
+  border-color: #93c5fd;
+  transform: translateY(-2px);
+}
+
+#success-message,
+#error-message {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+#success-message {
+  color: #16a34a;
+}
+
+#error-message {
+  color: #e11d48;
+}
+
+a.button-like {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  margin: 0.75rem 0.5rem;
+  background: #3B82F6;
+  color: #ffffff;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+a.button-like:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+a.button-like:active {
+  transform: translateY(0);
+}
+
+.radio-group {
+  margin: 1rem 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.radio-group label {
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+/* Responsive tweaks */
+@media (max-width: 400px) {
+  .signup-container {
+    padding: 1.5rem;
+  }
+
+  .signup-container h2 {
+    font-size: 1.25rem;
+  }
+
+  .radio-group {
+    gap: 10px;
+  }
+
+  .radio-group label {
+    font-size: 0.9rem;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="signup-container">
+    <h2>Sign Up</h2>
+    <form id="signupForm" method="post" action="/auth/signup">
+
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="role" value="User" checked/>
+          <span class="custom-radio"></span>
+          User
+        </label>
+        <label>
+          <input type="radio" name="role" value="Seller" />
+          <span class="custom-radio"></span>
+          Seller
+        </label>
+      </div>
+
+      <input type="text" id="newEmail" placeholder="EMAIL" required name="email">
+      <input type="password" id="newPassword" placeholder="Password" required name="password">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+      <button type="submit">Sign Up</button>
+      <a href="/auth/login" class="button-like">Account Already Exists</a>
+    </form>
+    <p id="success-message"></p>
+    <p id="error-message"></p>
+  </div>
+
+  <script>
+    const signupForm = document.getElementById('signupForm');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+
+    signupForm.addEventListener('submit', function (event) {
+
+      const username = document.getElementById('newEmail').value.trim();
+      const password = document.getElementById('newPassword').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match!";
+        successMessage.textContent = '';
+        event.preventDefault();
+      } else {
+        successMessage.textContent = "Signup successful!";
+        errorMessage.textContent = '';
+      }
+    });
+  </script>
+</body>
+
+</html>
