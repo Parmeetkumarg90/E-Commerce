@@ -31,7 +31,7 @@ export async function signupPostHandler(request, response) {
     const email = (String(request.body.email)).toLowerCase();
     const password = (String(request.body.password)).toLowerCase();
     const role = String(request.body.role);    
-    const signUser = await findUser(email,password,role).lean();
+    const signUser = await findUser(email,password,role);
     if (signUser) {
         return response.render('login', { errorCreated: "User Already Exists" });
     }
